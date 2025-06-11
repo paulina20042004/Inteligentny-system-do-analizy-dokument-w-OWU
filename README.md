@@ -1,0 +1,1 @@
+# Inteligentny-system-do-analizy-dokument-w-OWU
