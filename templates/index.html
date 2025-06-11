@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Czatuj z OWU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+      :root {
+        --glass-bg: rgba(255,255,255,0.82);
+        --glass-border: rgba(44,62,80,0.09);
+        --primary: #23406e;
+        --accent: #e3eafc;
+        --shadow: 0 8px 32px 0 rgba(44,62,80,0.13);
+        --radius: 18px;
+        --text: #1a2233;
+        --muted: #6c757d;
+        --cta: #23406e;
+        --cta-hover: #18305a;
+        --success: #2e7d32;
+        --danger: #b00;
+      }
+      html, body {
+        height: 100%;
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      body {
+        background: linear-gradient(120deg, #e3eafc 0%, #cfd8e5 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .container {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        max-width: 100vw;
+        padding: 0;
+      }
+      .footer {
+        background: #f5f7fa;
+        color: var(--primary);
+        text-align: center;
+        font-size: 0.98rem;
+        margin: 0;
+        letter-spacing: 0.01em;
+        width: 100vw;
+        min-height: 48px;
+        padding: 18px 0 12px 0;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        transform: translateX(-50%);
+        box-sizing: border-box;
+        border-top: 1px solid var(--glass-border);
+        flex-shrink: 0;
+        flex-grow: 0;
+        bottom: 0;
+      }
+      .logo {
+        background: linear-gradient(135deg, #23406e 40%, #e3eafc 100%) !important;
+      }
+      .user { color: var(--primary) !important; }
+      .bot { color: var(--text) !important; }
+      .formal { color: var(--muted) !important; }
+      .flashes { color: var(--danger) !important; }
+      .chat-section {
+        background: var(--glass-bg) !important;
+        border: 1px solid var(--glass-border) !important;
+        box-shadow: var(--shadow) !important;
+        max-width: 1200px;
+        margin: 0 auto 48px auto;
+        padding: 32px 24px;
+      }
+      /* Navigation styles */
+      .main-nav {
+        width: 100%;
+        background: #fff;
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: 0 2px 12px 0 rgba(44,62,80,0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        min-height: 56px;
+        height: 56px;
+        max-width: 100vw;
+        overflow-x: visible;
+        box-sizing: border-box;
+      }
+      .nav-inner {
+        width: 100%;
+        max-width: 1100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        height: 56px;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.18em;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        transition: color 0.18s;
+      }
+      .nav-logo svg {
+        width: 28px;
+        height: 28px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .nav-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.05em;
+        padding: 8px 18px;
+        border-radius: 22px;
+        transition: background 0.18s, color 0.18s;
+        white-space: nowrap;
+        border: none;
+        background: none;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+      }
+      .nav-link.active, .nav-link:hover, .nav-link:focus {
+        background: var(--accent);
+        color: var(--cta);
+        box-shadow: 0 2px 8px 0 rgba(44,62,80,0.06);
+      }
+      .nav-link:after {
+        content: '';
+        display: block;
+        margin: 0 auto;
+        width: 0;
+        height: 2px;
+        background: var(--cta);
+        transition: width 0.2s;
+      }
+      .nav-link.active:after, .nav-link:hover:after {
+        width: 60%;
+      }
+      @media (max-width: 900px) {
+        .nav-inner { padding: 0 8px; }
+        .container { max-width: 100vw; }
+      }
+      @media (max-width: 700px) {
+        .main-nav { min-height: 44px; height: auto; }
+        .nav-inner { flex-direction: column; align-items: flex-start; height: auto; padding: 0 2vw; }
+        .nav-links { gap: 2px; width: 100%; justify-content: flex-start; }
+        .nav-link { font-size: 0.98em; padding: 8px 10px; }
+        .nav-logo { font-size: 1em; }
+        .nav-logo svg { width: 22px; height: 22px; }
+      }
+      /* Tab styles */
+      .tabs {
+        display: flex;
+        gap: 0;
+        margin: 0 auto 32px auto;
+        max-width: 900px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 2px 12px 0 rgba(44,62,80,0.06);
+      }
+      .tab-btn {
+        flex: 1;
+        background: #f5f7fa;
+        color: var(--primary);
+        border: none;
+        padding: 14px 0;
+        font-size: 1.08em;
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s;
+        outline: none;
+      }
+      .tab-btn.active {
+        background: var(--glass-bg);
+        color: var(--cta);
+        border-bottom: 3px solid var(--cta);
+        z-index: 2;
+      }
+      .tab-content {
+        display: none;
+        animation: fadein 0.4s;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      @keyframes fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @media (max-width: 900px) {
+        .container { max-width: 100vw; }
+        .main-nav { padding: 0 2vw; }
+      }
+      @media (max-width: 700px) {
+        .main-nav { flex-direction: column; padding: 0 1vw; height: auto; min-height: 36px;}
+        .nav-links { gap: 2px; }
+        .nav-logo { font-size: 0.98em; }
+        .nav-logo svg { width: 18px; height: 18px; }
+        .tab-btn { font-size: 0.95em; padding: 8px 0; }
+      }
+      .chat-box {
+        margin: 0 auto;
+        padding: 0;
+        background: none;
+        border: none;
+        box-shadow: none;
+        max-width: 950px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .history {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 18px 14px;
+        background: #f0f4f8;
+        border-radius: 14px;
+        min-height: 320px;
+        max-height: 700px;
+        overflow-y: auto;
+        margin-bottom: 24px;
+        font-size: 1.15em;
+      }
+      .chat-bubble {
+        display: inline-block;
+        max-width: 90%;
+        padding: 16px 22px;
+        border-radius: 22px;
+        margin-bottom: 2px;
+        font-size: 1.13em;
+        word-break: break-word;
+        box-shadow: 0 2px 8px 0 rgba(44,62,80,0.08);
+        line-height: 1.6;
+      }
+      .bubble-user {
+        background: var(--accent);
+        color: var(--primary);
+        align-self: flex-end;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 22px;
+        margin-left: 10%;
+        text-align: right;
+        margin-top: 8px;
+      }
+      .bubble-bot {
+        background: #fff;
+        color: var(--text);
+        align-self: flex-start;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 22px;
+        margin-right: 10%;
+        text-align: left;
+        margin-top: 8px;
+      }
+      .bubble-formal {
+        background: #f0f4f8;
+        color: var(--muted);
+        font-size: 1em;
+        margin-bottom: 2px;
+        margin-left: 0;
+        margin-right: 20%;
+        align-self: flex-start;
+        border-radius: 16px;
+        padding: 10px 18px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 22px;
+      }
+      @media (max-width: 1300px) {
+        .chat-section { max-width: 99vw; }
+        .chat-box { max-width: 99vw; }
+      }
+      @media (max-width: 900px) {
+        .chat-section { max-width: 100vw; }
+        .chat-box { max-width: 100vw; }
+        .history { max-height: 350px; }
+      }
+      @media (max-width: 700px) {
+        .chat-section { max-width: 100vw; }
+        .chat-box { max-width: 100vw; }
+        .history { font-size: 1em; padding: 10px 2vw; min-height: 180px; }
+        .chat-bubble { font-size: 1em; padding: 12px 10px; }
+      }
+    </style>
+</head>
+<body>
+<div class="main-nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <!-- Nowe logo: ikona dokumentu PDF z lupą -->
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <rect x="6" y="4" width="16" height="22" rx="3" fill="#fff" stroke="#23406e" stroke-width="2"/>
+        <rect x="10" y="9" width="8" height="2" rx="1" fill="#23406e"/>
+        <rect x="10" y="13" width="8" height="2" rx="1" fill="#23406e"/>
+        <rect x="10" y="17" width="5" height="2" rx="1" fill="#23406e"/>
+        <circle cx="23" cy="23" r="4" fill="#e3eafc" stroke="#23406e" stroke-width="2"/>
+        <rect x="26.2" y="25.2" width="2.5" height="1.2" rx="0.6" transform="rotate(45 26.2 25.2)" fill="#23406e"/>
+      </svg>
+      Czatuj z OWU
+    </a>
+    <nav class="nav-links">
+      <button class="nav-link active" data-tab="about-tab" type="button">O aplikacji</button>
+      <button class="nav-link" data-tab="chat-tab" type="button">Chat & Instrukcja</button>
+      <button class="nav-link" data-tab="contact-tab" type="button">Kontakt</button>
+    </nav>
+  </div>
+</div>
+<div class="container" style="max-width:100vw; padding:0; margin-top:50px;">
+    <!-- TAB 1: O aplikacji -->
+    <div class="tab-content active" id="about-tab">
+        <!-- HERO SECTION -->
+        <section class="hero glass" data-aos="fade-up" style="padding: 60px 0 44px 0; min-height:unset; margin-bottom:48px;">
+            <div class="logo" style="width:80px; height:80px; margin-bottom:22px; background:linear-gradient(135deg,#23406e 40%,#e3eafc 100%)!important;">
+                <!-- Ikona dokumentu PDF z lupą -->
+                <svg width="56" height="56" viewBox="0 0 32 32" fill="none">
+                  <rect x="6" y="4" width="16" height="22" rx="3" fill="#fff" stroke="#23406e" stroke-width="2"/>
+                  <rect x="10" y="9" width="8" height="2" rx="1" fill="#23406e"/>
+                  <rect x="10" y="13" width="8" height="2" rx="1" fill="#23406e"/>
+                  <rect x="10" y="17" width="5" height="2" rx="1" fill="#23406e"/>
+                  <circle cx="23" cy="23" r="4" fill="#e3eafc" stroke="#23406e" stroke-width="2"/>
+                  <rect x="26.2" y="25.2" width="2.5" height="1.2" rx="0.6" transform="rotate(45 26.2 25.2)" fill="#23406e"/>
+                </svg>
+            </div>
+            <h1 style="font-size:2.6em; margin-bottom:18px;">Czatuj z OWU</h1>
+            <div style="margin-bottom:22px;">
+                <p style="margin-bottom:6px; font-size:1.22em;">Wgraj plik PDF OWU i zadawaj pytania dotyczące jego treści.</p>
+                <p style="margin-top:0;margin-bottom:0; font-size:1.08em; color:var(--muted);">Szybko, wygodnie, nowocześnie.</p>
+            </div>
+            <button type="button" class="cta-btn" id="goto-chat-btn" style="margin-top:26px;">Przejdź do chatu</button>
+        </section>
+
+        <!-- FEATURES SECTION -->
+        <section class="section" data-aos="fade-up" data-aos-delay="200">
+            <div class="features">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+                    <h3>Obsługa PDF</h3>
+                    <p>Bezpiecznie przesyłaj i analizuj dokumenty PDF.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <h3>Interaktywny chat</h3>
+                    <p>Zadawaj pytania i uzyskuj odpowiedzi dotyczące Twojego pliku.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <h3>Prywatność</h3>
+                    <p>Twoje dane są chronione i nie są udostępniane osobom trzecim.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TAB 2: Chat & Instrukcja -->
+    <div class="tab-content" id="chat-tab" style="margin-left:0; margin-right:0; width:100vw; max-width:100vw; padding:0;">
+        <!-- INSTRUCTION SECTION -->
+        <section class="section" data-aos="fade-up" data-aos-delay="100" style="margin-bottom:48px; max-width:750px; margin-left:auto; margin-right:auto;">
+            <div class="feature-card" style="max-width:600px; margin:0 auto; padding:32px 28px;" data-aos="fade-up" data-aos-delay="200">
+                <h3 style="font-size:1.3em; margin-bottom:18px;">Jak korzystać z aplikacji?</h3>
+                <ol style="text-align:left; font-size:1.08em; color:var(--text); padding-left:22px;">
+                    <li><b>Wgraj plik PDF OWU</b> – kliknij „Wybierz plik PDF OWU” i załaduj dokument, z którego chcesz uzyskać odpowiedzi.</li>
+                    <li><b>Zadaj pytanie</b> – wpisz pytanie dotyczące treści dokumentu (np. „Czy są wyłączenia od odszkodowania?”).</li>
+                    <li><b>Otrzymaj odpowiedź</b> – bot sformalizuje Twoje pytanie i odpowie na podstawie przesłanego pliku.</li>
+                    <li><b>Nie znalazłeś odpowiedzi?</b> – spróbuj inaczej sformułować pytanie lub sprawdź, czy przesłałeś właściwy dokument.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- CHAT SECTION -->
+        <section class="chat-section glass" id="chat" data-aos="fade-up" data-aos-delay="200" style="max-width:1200px; width:100%; margin-left:auto; margin-right:auto;">
+            <h2 style="text-align:center; margin-bottom:18px;">Twój chat z OWU</h2>
+            <form method="post" enctype="multipart/form-data" class="upload-form" id="pdf-upload-form">
+                <label style="font-weight:500;" for="pdf">Wybierz plik PDF OWU:</label>
+                <input type="file" name="pdf" id="pdf" accept="application/pdf" required style="margin-bottom:12px;">
+                <div id="pdf-upload-message" style="margin-top:8px; color:var(--primary); font-size:1em;"></div>
+            </form>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+            <hr style="margin:18px 0;">
+            <div class="chat-box" style="max-width:1200px; width:96vw; font-size:0.90em;">
+                <div class="history messages" id="messages">
+                    {% for entry in history %}
+                        <div class="chat-bubble bubble-user"><b>Ty:</b> {{ entry.user }}</div>
+                        {% if entry.formal and entry.formal != entry.user %}
+                        <div class="bubble-formal"><b>Sformalizowane pytanie:</b> {{ entry.formal }}</div>
+                        {% endif %}
+                        <div class="chat-bubble bubble-bot"><b>Bot:</b> {{ entry.bot|safe }}</div>
+                    {% endfor %}
+                </div>
+                <form action="/ask" method="post" class="chat-form input-row" id="ask-form" autocomplete="off">
+                    <input type="text" name="question" id="question-input" placeholder="Zadaj pytanie dotyczące pliku OWU..." required>
+                    <button type="submit" class="cta-btn">Wyślij pytanie</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- TAB 3: Kontakt -->
+    <div class="tab-content" id="contact-tab">
+        <section class="section glass" data-aos="fade-up" style="max-width:600px; margin:48px auto; text-align:center;">
+            <h2>Kontakt</h2>
+            <p>Masz pytania lub sugestie? Skontaktuj się:</p>
+            <ul style="list-style:none; padding:0; font-size:1.12em;">
+                <li><b>Email:</b> <a href="mailto:kontakt@czatujzowu.pl" style="color:var(--primary);text-decoration:none;">kontakt@czatujzowu.pl</a></li>
+                <li><b>Telefon:</b> <a href="tel:+48123456789" style="color:var(--primary);text-decoration:none;">+48 123 456 789</a></li>
+                <li><b>LinkedIn:</b> <a href="https://linkedin.com/in/paulina" target="_blank" style="color:var(--primary);text-decoration:none;">Paulina</a></li>
+            </ul>
+            <div style="margin-top:24px; color:var(--muted); font-size:0.98em;">
+                Odpowiadamy w ciągu 24h w dni robocze.
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        &copy; 2024 Czatuj z OWU &middot; Wykonanie: Paulina &middot; Design AI
+    </footer>
+</div>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 700,
+    once: true,
+    easing: 'ease-out-cubic'
+  });
+
+  // Tabs logic
+  document.addEventListener('DOMContentLoaded', function() {
+    var navLinks = document.querySelectorAll('.nav-link');
+    var tabContents = document.querySelectorAll('.tab-content');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        navLinks.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(tc => tc.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById(link.getAttribute('data-tab')).classList.add('active');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      });
+    });
+
+    // Przycisk "Przejdź do chatu" w hero
+    var gotoChatBtn = document.getElementById('goto-chat-btn');
+    if (gotoChatBtn) {
+      gotoChatBtn.addEventListener('click', function() {
+        var chatTabLink = document.querySelector('.nav-link[data-tab="chat-tab"]');
+        if (chatTabLink) {
+          chatTabLink.click();
+        }
+      });
+    }
+  });
+
+  // Scroll to chat if ?gotochat=1 in URL
+  window.addEventListener('DOMContentLoaded', function() {
+    if (window.location.search.includes('gotochat=1')) {
+      var chat = document.getElementById('chat');
+      if (chat) {
+        chat.scrollIntoView({behavior: 'smooth'});
+      }
+    }
+    // AJAX PDF upload
+    var pdfInput = document.getElementById('pdf');
+    var pdfFilename = document.getElementById('pdf-filename');
+    var pdfForm = document.getElementById('pdf-upload-form');
+    var pdfMsg = document.getElementById('pdf-upload-message');
+    var messagesDiv = document.getElementById('messages');
+    if (pdfInput && pdfForm) {
+      pdfInput.addEventListener('change', function() {
+        if (pdfInput.files.length > 0) {
+          var file = pdfInput.files[0];
+          if (pdfFilename) pdfFilename.textContent = file.name;
+          var formData = new FormData();
+          formData.append('pdf', file);
+          fetch('/upload', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              if (pdfMsg) {
+                pdfMsg.textContent = data.message;
+                pdfMsg.style.color = 'var(--primary)';
+              }
+              // Reset chat history in UI
+              if (messagesDiv) {
+                messagesDiv.innerHTML = '';
+              }
+            } else {
+              if (pdfMsg) {
+                pdfMsg.textContent = data.error || 'Błąd przesyłania pliku.';
+                pdfMsg.style.color = '#b00';
+              }
+              pdfFilename.textContent = 'Nie wybrano pliku';
+            }
+          })
+          .catch(() => {
+            if (pdfMsg) {
+              pdfMsg.textContent = 'Błąd przesyłania pliku.';
+              pdfMsg.style.color = '#b00';
+            }
+            pdfFilename.textContent = 'Nie wybrano pliku';
+          });
+        } else {
+          if (pdfFilename) pdfFilename.textContent = 'Nie wybrano pliku';
+          if (pdfMsg) pdfMsg.textContent = '';
+        }
+      });
+    }
+  });
+
+  // AJAX chat question submit
+  document.addEventListener('DOMContentLoaded', function() {
+    var askForm = document.getElementById('ask-form');
+    var questionInput = document.getElementById('question-input');
+    var messagesDiv = document.getElementById('messages');
+    if (askForm && questionInput && messagesDiv) {
+      askForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var question = questionInput.value.trim();
+        if (!question) return;
+        // Disable input/button while waiting
+        questionInput.disabled = true;
+        askForm.querySelector('button[type="submit"]').disabled = true;
+        fetch('/ask', {
+          method: 'POST',
+          headers: {'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded'},
+          body: 'question=' + encodeURIComponent(question)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            // Dodaj do historii czatu
+            var html = '';
+            html += '<div class="chat-bubble bubble-user"><b>Ty:</b> ' + escapeHtml(data.user) + '</div>';
+            if (data.formal && data.formal !== data.user) {
+              html += '<div class="bubble-formal"><b>Sformalizowane pytanie:</b> ' + escapeHtml(data.formal) + '</div>';
+            }
+            // Odpowiedź bota bez escapeHtml, by HTML był interpretowany
+            html += '<div class="chat-bubble bubble-bot"><b>Bot:</b> ' + data.bot + '</div>';
+            messagesDiv.insertAdjacentHTML('beforeend', html);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+          questionInput.value = '';
+          questionInput.disabled = false;
+          askForm.querySelector('button[type="submit"]').disabled = false;
+        })
+        .catch(() => {
+          alert('Błąd połączenia z serwerem.');
+          questionInput.disabled = false;
+          askForm.querySelector('button[type="submit"]').disabled = false;
+        });
+      });
+    }
+    // HTML escaping helper
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[m];
+      });
+    }
+  });
+</script>
+</body>
+</html>
