@@ -1,0 +1,5 @@
+uploads/*
+!uploads/example.txt
+index/*
+!index/example.txt
+.env
